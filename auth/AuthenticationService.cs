@@ -2,13 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Security.Principal;
 
-class LoginSession
-{
-    public DateTime Expires { get; set; }
-    public User? User { get; set; }
-    public Authentication Authentication { get; set; }
-}
-
 public struct Authentication
 {
     
@@ -16,19 +9,19 @@ public struct Authentication
 
 // AUTHENTICATION SYSTEM: "Is the user who they say they are?"
 // DIFFERENT THAN THE AUTHORIZATION SYSTEM, which is "Does this user have permission to do this?"
-public static class AuthenticationSystem
+public class AuthenticationSystem
 {
 
-    static AuthenticationSystem()
+    public AuthenticationSystem()
     {
         activeSessions = new();
     }
 
-    private static Dictionary<Authentication, LoginSession> activeSessions;
+    private Dictionary<Authentication, LoginSession> activeSessions;
 
-    private static bool HasExpired(LoginSession session) => session.Expires < DateTime.Now;
+    private bool HasExpired(LoginSession session) => session.Expires < DateTime.Now;
 
-    private static User? GetUserFromToken(Authentication auth)
+    private User? GetUserFromToken(Authentication auth)
     {
         if(activeSessions.TryGetValue(auth, out LoginSession? session))
         {
@@ -42,9 +35,8 @@ public static class AuthenticationSystem
         return null;
     }
 
-    
 
-    public static void CullActiveSessions()
+    public void CullActiveSessions()
     {
         List<Authentication> removeList = new();
         foreach (KeyValuePair<Authentication, LoginSession> kvp in activeSessions)
@@ -58,13 +50,30 @@ public static class AuthenticationSystem
         }
     }
 
-    public static bool ValidateAuthentication(User user, Authentication auth)
+    public bool ValidateAuthentication(User user, Authentication auth)
     {
         if (!activeSessions.ContainsKey(auth)) return false;
         LoginSession session = activeSessions[auth];
         if (session.User != user) return false;
         if (HasExpired(session)) return false;
         return true;
+    }
+
+    public bool DoesUserHaveActiveSession(User user)
+    {
+        if (user.Session == null) return false;
+        if (HasExpired(user.Session))
+        {
+            user.Session = null;
+            return false;
+        }
+        return ValidateAuthentication(user, user.Session.Authentication);
+    }
+
+    public Authentication? Login(string username, string password)
+    {
+        
+        return new Authentication();
     }
 
 }
