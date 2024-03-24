@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 
@@ -11,7 +12,7 @@ public class User
     public string? Username { get; set; }
     public string? PasswordHash { get; private set; }
 
-    [NotMapped]
+    [NotMapped, NotNull]
     public SecureHash<SHA256>? PasswordHashData
     {
         get => SecureHash<SHA256>.FromHexString(PasswordHash);

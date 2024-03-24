@@ -7,18 +7,18 @@ public static class Application
 
     public static AuthenticationSystem AuthenticationSystem { get; }
     public static DatabaseController Database { get; }
-
+    public static AccountController Accounts { get; }
 
 
     static Application()
     {
         AuthenticationSystem = new AuthenticationSystem();
         Database = new DatabaseController();
+        Accounts = new AccountController();
     }
 
     public static void Main(string[] args)
     {
-
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -72,7 +72,7 @@ public static class Application
     private static IResult CreateUser([FromHeader(Name = "Username")] string? username, [FromHeader(Name = "Password")] string? password)
     {
         if (username == null || password == null) return TypedResults.BadRequest();
-        return TypedResults.Ok(Database.createUser(username, password));
+        return TypedResults.Ok(Accounts.CreateUser(username, password));
     }
 
 }

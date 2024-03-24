@@ -110,6 +110,7 @@ public class SecureHash<T> where T : HashAlgorithm
 
     public static bool operator ==(SecureHash<T> left, SecureHash<T> right)
     {
+
         return left.hash.SequenceEqual(right.hash);
     }
 

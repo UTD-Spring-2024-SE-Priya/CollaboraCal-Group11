@@ -87,6 +87,14 @@ public class AuthenticationSystem
             return user.Session?.Authentication;
         }
 
+        var suppliedHash = new SecureHash<SHA256>(password);
+        var realHash = user.PasswordHashData;
+
+        if (suppliedHash == realHash)
+        {
+
+        }
+
         return GenerateUniqueRandomAuthcode();
     }
 
