@@ -5,14 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 public static class Application
 {
 
-    private static AuthenticationSystem authSystem;
-    private static DatabaseController database;
+    public static AuthenticationSystem AuthenticationSystem { get; }
+    public static DatabaseController Database { get; }
+
 
 
     static Application()
     {
-        authSystem = new AuthenticationSystem();
-        database = new DatabaseController();
+        AuthenticationSystem = new AuthenticationSystem();
+        Database = new DatabaseController();
     }
 
     public static void Main(string[] args)
@@ -42,8 +43,9 @@ public static class Application
         // app.MapGet(), MapPost(), etc.
 
         app.MapGet("/", DefaultResponse).WithOpenApi();
-        app.MapGet("/authenticate", AuthenticationTest).WithOpenApi();
+        app.MapGet("/authenticate", AuthenticationTest).WithName("Authenticate").WithOpenApi();
         app.MapPost("/login", Login);
+
 
         app.Run();
     }
@@ -51,9 +53,9 @@ public static class Application
     private static IResult Login([FromHeader(Name = "Username")] string? username, [FromHeader(Name = "Password")] string? password)
     {
         if (username == null || password == null) return TypedResults.BadRequest("Missing 'Username' and/or 'Password' headers");
-        var result = authSystem.Login(username, password);
+        var result = AuthenticationSystem.Login(username, password);
         if (result == null) return TypedResults.Unauthorized();
-        return TypedResults.Ok(new LoginResponse(result.Value, username));
+        return TypedResults.Ok(new LoginResponse(result, username));
     }
 
     private static IResult DefaultResponse()
@@ -67,28 +69,15 @@ public static class Application
         return TypedResults.Ok(new CalendarTestResponse2("Test String", auth));
     }
 
-    /* MapGet() example using lambda expression
-
-    app.MapGet("/weatherforecast", () =>
+    private static IResult CreateUser([FromHeader(Name = "Username")] string? username, [FromHeader(Name = "Password")] string? password)
     {
-        var forecast =  Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecast
-            (
-                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
-            ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
-    */
+        if (username == null || password == null) return TypedResults.BadRequest();
+        return TypedResults.Ok(Database.createUser(username, password));
+    }
 
 }
 
-record LoginResponse(Authentication authentication, string username);
+record LoginResponse(string authentication, string username);
 
 record CalendarTestResponse(string name, string email, int age);
 

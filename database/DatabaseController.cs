@@ -7,7 +7,7 @@ public class DatabaseController
 {
     private CollaboraCalDBContext dbContext;
 
-    private const string DbPath = @"C:\Users\Augustus\Desktop\CCDB\CollaboraCalDB.db";
+    private const string DbPath = @"sqlitecloud://admin:collabora2003@cj471jujik.sqlite.cloud:8860";
 
     public DatabaseController()
     {

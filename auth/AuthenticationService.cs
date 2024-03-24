@@ -1,11 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Security.Principal;
-
-public struct Authentication
-{
-    
-}
+using System.Security.Cryptography;
 
 // AUTHENTICATION SYSTEM: "Is the user who they say they are?"
 // DIFFERENT THAN THE AUTHORIZATION SYSTEM, which is "Does this user have permission to do this?"
@@ -17,11 +12,11 @@ public class AuthenticationSystem
         activeSessions = new();
     }
 
-    private Dictionary<Authentication, LoginSession> activeSessions;
+    private Dictionary<string, LoginSession> activeSessions;
 
     private bool HasExpired(LoginSession session) => session.Expires < DateTime.Now;
 
-    private User? GetUserFromToken(Authentication auth)
+    private User? GetUserFromToken(string auth)
     {
         if(activeSessions.TryGetValue(auth, out LoginSession? session))
         {
@@ -38,20 +33,21 @@ public class AuthenticationSystem
 
     public void CullActiveSessions()
     {
-        List<Authentication> removeList = new();
-        foreach (KeyValuePair<Authentication, LoginSession> kvp in activeSessions)
+        List<string> removeList = new();
+        foreach (KeyValuePair<string, LoginSession> kvp in activeSessions)
         {
             if (HasExpired(kvp.Value))
                 removeList.Add(kvp.Key);
         }
-        foreach(Authentication token in removeList)
+        foreach(string token in removeList)
         {
             activeSessions.Remove(token);
         }
     }
 
-    public bool ValidateAuthentication(User user, Authentication auth)
+    public bool ValidateAuthentication(User user, string? auth)
     {
+        if (auth == null) return false;
         if (!activeSessions.ContainsKey(auth)) return false;
         LoginSession session = activeSessions[auth];
         if (session.User != user) return false;
@@ -70,10 +66,28 @@ public class AuthenticationSystem
         return ValidateAuthentication(user, user.Session.Authentication);
     }
 
-    public Authentication? Login(string username, string password)
+    private string GenerateUniqueRandomAuthcode()
     {
+        string authtoken;
+        do
+        {
+            authtoken = new SecureHash<SHA256>(Random.Shared.Next()).ToString();
+        }
+        while(activeSessions.ContainsKey(authtoken));
+        return authtoken;
+    }
+
+    public string? Login(string username, string password)
+    {
+        User? user = Application.Database.GetUserFromUsername(username);
+        if (user == null) return null;
         
-        return new Authentication();
+        if(DoesUserHaveActiveSession(user))
+        {
+            return user.Session?.Authentication;
+        }
+
+        return GenerateUniqueRandomAuthcode();
     }
 
 }

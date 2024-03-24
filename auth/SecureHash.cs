@@ -79,7 +79,7 @@ public class SecureHash<T> where T : HashAlgorithm
 
     public override string ToString()
     {
-        IEnumerable<string> asStrings = hash.Select(a => a.ToString("X2"));
+        IEnumerable<string> asStrings = hash.Select(a => a.ToString("x2"));
         return string.Concat(asStrings);
     }
 
