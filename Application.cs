@@ -5,8 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 public static class Application
 {
 
+    private static AuthenticationSystem authSystem;
+    private static DatabaseController database;
+
+
+    static Application()
+    {
+        authSystem = new AuthenticationSystem();
+        database = new DatabaseController();
+    }
+
     public static void Main(string[] args)
     {
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -32,8 +43,17 @@ public static class Application
 
         app.MapGet("/", DefaultResponse).WithOpenApi();
         app.MapGet("/authenticate", AuthenticationTest).WithOpenApi();
+        app.MapPost("/login", Login);
 
         app.Run();
+    }
+
+    private static IResult Login([FromHeader(Name = "Username")] string? username, [FromHeader(Name = "Password")] string? password)
+    {
+        if (username == null || password == null) return TypedResults.BadRequest("Missing 'Username' and/or 'Password' headers");
+        var result = authSystem.Login(username, password);
+        if (result == null) return TypedResults.Unauthorized();
+        return TypedResults.Ok(new LoginResponse(result.Value, username));
     }
 
     private static IResult DefaultResponse()
@@ -67,6 +87,8 @@ public static class Application
     */
 
 }
+
+record LoginResponse(Authentication authentication, string username);
 
 record CalendarTestResponse(string name, string email, int age);
 
