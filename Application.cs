@@ -44,19 +44,18 @@ public static class Application
         // app.MapGet(), MapPost(), etc.
 
         app.MapGet("/", DefaultResponse).WithOpenApi();
-        app.MapGet("/authenticate", AuthenticationTest).WithName("Authenticate").WithOpenApi();
-        app.MapPost("/login", Login);
+        app.MapPost("/login", Login).WithName("Login").WithOpenApi();
 
 
         app.Run();
     }
 
-    private static IResult Login([FromHeader(Name = "Username")] string? username, [FromHeader(Name = "Password")] string? password)
+    private static IResult Login([FromHeader(Name = "EMail")] string? email, [FromHeader(Name = "Password")] string? password)
     {
-        if (username == null || password == null) return TypedResults.BadRequest("Missing 'Username' and/or 'Password' headers");
-        var result = AuthenticationSystem.Login(username, password);
+        if (email == null || password == null) return TypedResults.BadRequest("Missing 'EMail' and/or 'Password' headers");
+        var result = AuthenticationSystem.Login(email, password);
         if (result == null) return TypedResults.Unauthorized();
-        return TypedResults.Ok(new LoginResponse(result, username));
+        return TypedResults.Ok(new LoginResponse(result, email));
     }
 
     private static IResult DefaultResponse()
@@ -64,22 +63,15 @@ public static class Application
         return TypedResults.Ok("Default Response");
     }
 
-    private static IResult AuthenticationTest([FromHeader(Name = "Authorization")] string? auth)
+    private static IResult CreateUser(
+        [FromHeader(Name = "EMail")] string? email, 
+        [FromHeader(Name = "Password")] string? password,
+        [FromHeader(Name = "Name")] string? name)
     {
-        if (auth == null) return TypedResults.Unauthorized();
-        return TypedResults.Ok(new CalendarTestResponse2("Test String", auth));
-    }
-
-    private static IResult CreateUser([FromHeader(Name = "Username")] string? username, [FromHeader(Name = "Password")] string? password)
-    {
-        if (username == null || password == null) return TypedResults.BadRequest();
-        return TypedResults.Ok(Accounts.CreateUser(username, password));
+        if (email == null || name == null || password == null) return TypedResults.BadRequest();
+        return TypedResults.Ok(Accounts.CreateUser(email, name, password));
     }
 
 }
 
 record LoginResponse(string authentication, string username);
-
-record CalendarTestResponse(string name, string email, int age);
-
-record CalendarTestResponse2(string name, string requestEncoding);

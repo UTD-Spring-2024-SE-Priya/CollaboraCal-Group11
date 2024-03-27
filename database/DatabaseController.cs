@@ -25,15 +25,15 @@ public sealed class DatabaseController
     }
 
 
-    public User? GetUserFromUsername(string username)
+    public User? GetUserFromEmail(string email)
     {
-        return dbContext.Users.SingleOrDefault(a => a.Username == username);
+        return dbContext.Users.SingleOrDefault(a => a.EMail == email);
     }
 
     public bool AddUser(User user)
     {
-        if (user.Username == null) return false;
-        if (GetUserFromUsername(user.Username) != null)
+        if (user.EMail == null) return false;
+        if (GetUserFromEmail(user.EMail) != null)
             return false;
         dbContext.Users.Add(user);
         dbContext.SaveChanges();

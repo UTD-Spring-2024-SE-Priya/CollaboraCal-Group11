@@ -76,17 +76,18 @@ public class AuthenticationSystem
 
     private string GenerateUniqueRandomAuthcode()
     {
-        const int generatorDataLength = 32;
-        const string alnum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        string data = new string(Enumerable.Repeat(alnum, generatorDataLength)
-            .Select(a => a[Random.Shared.Next(alnum.Length)])
-            .ToArray());
-        return new SecureHash<SHA256>(data).ToString();
+        // const int generatorDataLength = 32;
+        // const string alnum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        // string data = new string(Enumerable.Repeat(alnum, generatorDataLength)
+        //     .Select(a => a[Random.Shared.Next(alnum.Length)])
+        //     .ToArray());
+        // return new SecureHash<SHA256>(data).ToString();
+        return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
     }
 
-    public string? Login(string username, string password)
+    public string? Login(string email, string password)
     {
-        User? user = Application.Database.GetUserFromUsername(username);
+        User? user = Application.Database.GetUserFromEmail(email);
         if (user == null) return null;
         
         if(DoesUserHaveActiveSession(user))

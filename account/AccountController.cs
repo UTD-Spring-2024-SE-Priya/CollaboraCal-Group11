@@ -5,31 +5,32 @@ using System.Security.Cryptography;
 public class AccountController
 {
     
-    public string CreateUser(string username, string password)
+    public string CreateUser(string email, string name, string password)
     {
-        (string, bool) userCredValidation = UserPassValid(username, password);
+        (string, bool) userCredValidation = EmailPassValid(email, password);
         if (userCredValidation.Item2)
         {
             User user = new()
             {
-                Username = username,
-                PasswordHashData = new SecureHash<SHA256>(password)
+                EMail = email,
+                PasswordHashData = new SecureHash<SHA256>(password),
+                Name = name,
             };
             Application.Database.AddUser(user);
         }
         return userCredValidation.Item1;
     }
 
-    private (string, bool) UserPassValid(string username, string password)
+    private (string, bool) EmailPassValid(string email, string password)
     {
-        if (string.IsNullOrWhiteSpace(username))
-            return ("Username field is blank", false);
+        if (string.IsNullOrWhiteSpace(email))
+            return ("Email field is blank", false);
         if (string.IsNullOrWhiteSpace(password))
             return ("Password field is blank", false);
-        if (Application.Database.GetUserFromUsername(username) != null)
-            return ("Username already exists", false);
+        if (Application.Database.GetUserFromEmail(email) != null)
+            return ("Email already exists", false);
         if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsNumber))
             return ("Password must be at least 8 characters long with at least one uppercase letter, lowercase letter, and number", false);
-        return ("Username and Password are Valid", true);
+        return ("Email and Password are Valid", true);
     }
 }
