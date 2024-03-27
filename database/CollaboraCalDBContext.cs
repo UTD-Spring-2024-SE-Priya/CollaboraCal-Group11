@@ -5,24 +5,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-internal class CollaboraCalDBContext : DbContext
+internal sealed class CollaboraCalDBContext : DbContext
 {
 
     //const string SQLServerConnectionString = @"Server=localhost;Database=master;Trusted_Connection=True;";
     //const string SQLiteConnectionString = @"Data Source=c:\mydb.db;";
 
-    private string DbPath;
+    public string ConnectionString { get; }
 
-    public CollaboraCalDBContext(string path)
+    public CollaboraCalDBContext()
     {
-        DbPath = path;
+        ConnectionString = WebApplication.CreateBuilder().Configuration.GetConnectionString("CollaboraCalDBContext");
+        Console.WriteLine($"Connection String: '{ConnectionString}'");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite($"Data Source={DbPath}");
+        options.UseSqlite(ConnectionString);
     }
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<Calendar> Calendars { get; set; }
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Calendar> Calendars => Set<Calendar>();
 }

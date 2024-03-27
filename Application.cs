@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public static class Application
 {
@@ -20,6 +21,31 @@ public static class Application
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // Database.AddUser(
+        //     new User
+        //     {
+        //         Username = "Lean",
+        //         EMail = "email",
+        //         PasswordHashData = new SecureHash<SHA256>("my password"),
+        //     }
+        // );
+
+        Database.AddUser(
+            new User
+            {
+                Username = "LeanHydra",
+                EMail = "guslindell2@gmail.com",
+                PasswordHashData = new SecureHash<SHA256>("My Password Data"),
+            }
+        );
+
+        User? user = Database.GetUserFromUsername("LeanHydra");
+
+        if(user != null)
+            Console.WriteLine($"Found User: {user.Username}, {user.EMail}, {user.ID}");
+
+        return;
 
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

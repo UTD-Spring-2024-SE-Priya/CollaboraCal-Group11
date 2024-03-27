@@ -12,14 +12,12 @@ public class User
     public string? Username { get; set; }
     public string? PasswordHash { get; private set; }
 
-    [NotMapped, NotNull]
+    [NotMapped]
     public SecureHash<SHA256>? PasswordHashData
     {
         get => SecureHash<SHA256>.FromHexString(PasswordHash);
         set => PasswordHash = value?.ToString();
     }
 
-    [NotMapped]
-    public LoginSession? Session { get; set; }
 }
 
