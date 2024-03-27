@@ -33,4 +33,17 @@ public class AccountController
             return ("Password must be at least 8 characters long with at least one uppercase letter, lowercase letter, and number", false);
         return ("Email and Password are Valid", true);
     }
+
+    public bool ChangeName(string email, string authentication, string newName)
+    {
+        User? user = Application.Database.GetUserFromEmail(email);
+        if (user == null) return false;
+        if (Application.AuthenticationSystem.ValidateAuthentication(user, authentication))
+        {
+            user.Name = newName;
+            Application.Database.Context.SaveChanges();
+            return true;
+        }
+        return false;
+    }
 }

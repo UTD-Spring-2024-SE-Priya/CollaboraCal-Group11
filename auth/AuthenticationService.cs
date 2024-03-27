@@ -44,7 +44,9 @@ public class AuthenticationSystem
         foreach (KeyValuePair<int, LoginSession> kvp in activeSessions)
         {
             if (HasExpired(kvp.Value))
+            {
                 removeList.Add(kvp.Key);
+            }
         }
         foreach(int id in removeList)
         {
@@ -52,13 +54,20 @@ public class AuthenticationSystem
         }
     }
 
-    public bool ValidateAuthentication(User user, string? auth)
+    public bool ValidateAuthentication(string email, string authentication)
     {
-        if (auth == null) return false;
+        User? user = Application.Database.GetUserFromEmail(email);
+        if (user == null) return false;
+        return ValidateAuthentication(user, authentication);
+    }
+
+    public bool ValidateAuthentication(User user, string? authentication)
+    {
+        if (authentication == null) return false;
         if (!activeSessions.ContainsKey(user.ID)) return false;
         LoginSession session = activeSessions[user.ID];
         if (HasExpired(session)) return false;
-        return auth == session.Authentication;
+        return authentication == session.Authentication;
     }
 
     public bool DoesUserHaveActiveSession(User user)
@@ -74,7 +83,7 @@ public class AuthenticationSystem
         return true;
     }
 
-    private string GenerateUniqueRandomAuthcode()
+    private string NewGUID128String()
     {
         // const int generatorDataLength = 32;
         // const string alnum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -82,7 +91,8 @@ public class AuthenticationSystem
         //     .Select(a => a[Random.Shared.Next(alnum.Length)])
         //     .ToArray());
         // return new SecureHash<SHA256>(data).ToString();
-        return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        string authToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        return authToken;
     }
 
     public string? Login(string email, string password)
@@ -101,7 +111,7 @@ public class AuthenticationSystem
             throw new Exception("User password hash is null here. This should never be null.");
         if (suppliedHash == realHash)
         {
-            string authcode = GenerateUniqueRandomAuthcode();
+            string authcode = NewGUID128String();
             LoginSession session = new LoginSession
             {
                 Expires = DateTime.Now + AuthenticationTokenExpirationTime,
@@ -109,6 +119,7 @@ public class AuthenticationSystem
                 Authentication = authcode,
             };
             activeSessions[user.ID] = session;
+
             return authcode;
         }
 

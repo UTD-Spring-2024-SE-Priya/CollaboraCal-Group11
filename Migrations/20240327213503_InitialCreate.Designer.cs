@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollaboraCal.Migrations
 {
     [DbContext(typeof(CollaboraCalDBContext))]
-    [Migration("20240327183225_InitialCreate")]
+    [Migration("20240327213503_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -38,10 +38,10 @@ namespace CollaboraCal.Migrations
                     b.Property<string>("EMail")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
