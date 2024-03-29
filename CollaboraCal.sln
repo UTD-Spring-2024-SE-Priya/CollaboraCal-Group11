@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollaboraCal", "CollaboraCal.csproj", "{F8CC422C-3508-41FB-B212-70D62AB31E21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phase4TestCases", "..\Phase4TestCases\Phase4TestCases.csproj", "{835649A9-A24D-4769-88FA-5D177D7C1E84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phase4TestCases", ".\Phase4TestCases\Phase4TestCases.csproj", "{835649A9-A24D-4769-88FA-5D177D7C1E84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
