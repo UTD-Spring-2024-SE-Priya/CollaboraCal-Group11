@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-[Serializable]
-public class Calendar
+namespace CollaboraCal
 {
-    public int ID { get; set; }
+    [Serializable]
+    public class Calendar
+    {
+        public int ID { get; set; }
+    }
 }

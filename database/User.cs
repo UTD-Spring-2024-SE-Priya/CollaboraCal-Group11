@@ -4,20 +4,23 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 
-[Serializable]
-public class User
+namespace CollaboraCal
 {
-    public int ID { get; set; }
-    public string? EMail { get; set; }
-    public string? Name { get; set; }
-    public string? PasswordHash { get; private set; }
-
-    [NotMapped]
-    public SecureHash<SHA256>? PasswordHashData
+    [Serializable]
+    public class User
     {
-        get => SecureHash<SHA256>.FromHexString(PasswordHash);
-        set => PasswordHash = value?.ToString();
-    }
+        public int ID { get; set; }
+        public string? EMail { get; set; }
+        public string? Name { get; set; }
+        public string? PasswordHash { get; private set; }
 
+        [NotMapped]
+        public SecureHash<SHA256>? PasswordHashData
+        {
+            get => SecureHash<SHA256>.FromHexString(PasswordHash);
+            set => PasswordHash = value?.ToString();
+        }
+
+    }
 }
 
