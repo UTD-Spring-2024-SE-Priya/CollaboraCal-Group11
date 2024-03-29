@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 public class AccountController
 {
     
-    public string CreateUser(string email, string name, string password)
+    public string CreateUser(string email, string name, string password, string confpassword)
     {
-        (string, bool) userCredValidation = EmailPassValid(email, password);
+        (string, bool) userCredValidation = EmailPassValid(email, password, confpassword);
         if (userCredValidation.Item2)
         {
             User user = new()
@@ -22,7 +22,7 @@ public class AccountController
         return userCredValidation.Item1;
     }
 
-    private (string, bool) EmailPassValid(string email, string password)
+    private (string, bool) EmailPassValid(string email, string password, string confpassword)
     {
         if (string.IsNullOrWhiteSpace(email))
             return ("Email field is blank", false);
@@ -38,6 +38,8 @@ public class AccountController
 
         if (!validEMail)
             return ("Couldn't verify email address", false);
+        if (!password.Equals(confpassword))
+            return ("Passwords do not match each other", false);
         if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsNumber))
             return ("Password must be at least 8 characters long with at least one uppercase letter, lowercase letter, and number", false);
         return ("Email and Password are Valid", true);
