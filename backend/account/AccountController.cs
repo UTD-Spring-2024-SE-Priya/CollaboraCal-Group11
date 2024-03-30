@@ -44,7 +44,7 @@ namespace CollaboraCal
                 return ("Couldn't verify email address", false);
             if (!password.Equals(confpassword))
                 return ("Passwords do not match each other", false);
-            if (password.Length <= 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsNumber))
+            if (password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsNumber))
                 return ("Password must be at least 8 characters long with at least one uppercase letter, lowercase letter, and number", false);
             return ("Email and Password are Valid", true);
         }
