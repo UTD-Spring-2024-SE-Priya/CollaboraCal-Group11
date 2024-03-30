@@ -42,6 +42,14 @@ namespace CollaboraCal
             return true;
         }
 
+        public void RemoveUserByEmail(string email)
+        {
+            User? user = GetUserFromEmail(email);
+            if (user == null) return;
+            dbContext.Users.Remove(user);
+            dbContext.SaveChanges();
+        }
+
         public IEnumerable<User> GetAllUsers()
         {
             return dbContext.Users;
