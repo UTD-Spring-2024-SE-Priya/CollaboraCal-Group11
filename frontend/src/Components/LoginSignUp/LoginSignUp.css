@@ -77,7 +77,7 @@
 .submit-container {
     display: flex;
     gap: 30px;
-    margin: 40px auto;
+    margin: 30px auto;
 }
 
 .submit {
@@ -107,3 +107,12 @@
     align-items: center;
     font-weight: 700;
 }
+
+.errormessage {
+    color: red;
+    font-weight: bold;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+  
