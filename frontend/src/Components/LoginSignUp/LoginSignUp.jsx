@@ -19,15 +19,37 @@ const LoginSignUp = () => {
         setError("");
     };
 
-    const handleSubmitClick = () => {
-        if (action === "Login" ? !email || !password : !name || !email || !password) {
-            // Set error message if fields are not filled
-            setError("Please fill in all fields.");
-        } else {
-            // Redirect to the "/home" route
-            navigate("/home");
-        }
+    const validatePassword = (password) => {
+        // Password should be at least 8 characters long and contain at least 1 uppercase, 1 lowercase, and 1 number
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        return passwordRegex.test(password);
     };
+    
+    const handleSubmitClick = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+        if (action === "Login") {
+            // For login, just check if email and password are provided
+            if (!email || !password) {
+                setError("Please fill in all fields.");
+            } else {
+                // Redirect to the "/home" route
+                navigate("/home");
+            }
+        } else {
+            // For sign up, check if all fields are filled, validate email and password
+            if (!name || !email || !password) {
+                setError("Please fill in all fields.");
+            } else if (!emailRegex.test(email)) {
+                setError("Please enter a valid email.");
+            } else if (!validatePassword(password)) {
+                setError("Password should be at least 8 characters long with at least 1 uppercase, 1 lowercase, and 1 number.");
+            } else {
+                // Redirect to the "/home" route
+                navigate("/home");
+            }
+        }
+    };    
 
     return (
         <div className='container'>
