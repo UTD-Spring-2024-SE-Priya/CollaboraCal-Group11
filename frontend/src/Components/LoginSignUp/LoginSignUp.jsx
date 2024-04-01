@@ -49,7 +49,11 @@ const LoginSignUp = () => {
                 navigate("/home");
             }
         }
-    };    
+    };
+    
+    const handleForgotPasswordClick = () => {
+        navigate("/reset-password");
+    };
 
     return (
         <div className='container'>
@@ -73,7 +77,7 @@ const LoginSignUp = () => {
                     <input type="password" placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
             </div>
-            {action === "Login" && <div className="forgot-password">Forgot Password? <span>Click Here!</span></div>}
+            {action === "Login" && <div className="forgot-password" onClick={handleForgotPasswordClick}>Forgot Password? <span>Click Here!</span></div>}
             {error && <div className="error-message errormessage">{error}</div>}
             <div className="submit-container">
                 <div className="submit" onClick={handleToggleClick}>{action === "Login" ? "Sign Up" : "Login"}</div>
