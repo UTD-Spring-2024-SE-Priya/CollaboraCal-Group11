@@ -26,16 +26,22 @@ namespace CollaboraCal
             dbContext = new CollaboraCalDBContext();
         }
 
+        //      USER
 
-        public User? GetUserFromEmail(string email)
+        public User? GetLightUserFromEmail(string email)
         {
             return dbContext.Users.SingleOrDefault(a => a.EMail == email);
+        }
+
+        public User? GetHeavyUserFromEmail(string email)
+        {
+            return dbContext.Users.Include(a => a.Calendars).SingleOrDefault(a => a.EMail == email);
         }
 
         public bool AddUser(User user)
         {
             if (user.EMail == null) return false;
-            if (GetUserFromEmail(user.EMail) != null)
+            if (GetLightUserFromEmail(user.EMail) != null)
                 return false;
             dbContext.Users.Add(user);
             dbContext.SaveChanges();
@@ -44,7 +50,7 @@ namespace CollaboraCal
 
         public void RemoveUserByEmail(string email)
         {
-            User? user = GetUserFromEmail(email);
+            User? user = GetLightUserFromEmail(email);
             if (user == null) return;
             dbContext.Users.Remove(user);
             dbContext.SaveChanges();
@@ -59,6 +65,37 @@ namespace CollaboraCal
         {
             if (!AreYouSure) return;
             dbContext.Users.RemoveRange(GetAllUsers());
+            dbContext.SaveChanges();
+        }
+
+        //      CALENDAR
+
+        public void AddCalendar(Calendar calendar)
+        {
+            dbContext.Calendars.Add(calendar);
+            dbContext.SaveChanges();
+        }
+
+        public List<Calendar>? GetLightAllCalendars(string email)
+        { 
+            User? user = GetHeavyUserFromEmail(email);
+            return user?.Calendars?.ToList();
+        }
+
+        public Calendar GetHeavyCalendar(int calendarID)
+        {
+            return dbContext.Calendars
+                .Where(a => a.ID == calendarID)
+                .Include(a => a.Events)
+                .Include(a => a.Users)
+                .Single();
+        }
+
+        //      EVENTS
+
+        public void AddEvent(Event ev)
+        {
+            dbContext.Events.Add(ev);
             dbContext.SaveChanges();
         }
 

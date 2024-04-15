@@ -32,7 +32,7 @@ namespace CollaboraCal
                 return ("Password field is blank", false);
             if (string.IsNullOrWhiteSpace(confpassword))
                 return ("Confirm Password field is blank", false);
-            if (Application.Database.GetUserFromEmail(email) != null)
+            if (Application.Database.GetLightUserFromEmail(email) != null)
                 return ("Email already exists", false);
 
             //  This will test if the entered email is an actual email or not
@@ -51,9 +51,9 @@ namespace CollaboraCal
 
         public bool ChangeName(string email, string authentication, string newName)
         {
-            User? user = Application.Database.GetUserFromEmail(email);
+            User? user = Application.Database.GetLightUserFromEmail(email);
             if (user == null) return false;
-            if (Application.AuthenticationSystem.ValidateAuthentication(user, authentication))
+            if (Application.Sessions.ValidateAuthentication(user, authentication))
             {
                 user.Name = newName;
                 Application.Database.Context.SaveChanges();

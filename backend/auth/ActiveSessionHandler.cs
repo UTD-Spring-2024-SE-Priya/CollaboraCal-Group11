@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace CollaboraCal
 {
-    public class AuthenticationSystem
+    public class ActiveSessionHandler
     {
 
         public TimeSpan AuthenticationTokenExpirationTime { get; }
 
-        public AuthenticationSystem()
+        public ActiveSessionHandler()
         {
             activeSessions = new();
             AuthenticationTokenExpirationTime = new TimeSpan(72, 0, 0);
@@ -59,7 +59,7 @@ namespace CollaboraCal
 
         public bool ValidateAuthentication(string email, string authentication)
         {
-            User? user = Application.Database.GetUserFromEmail(email);
+            User? user = Application.Database.GetLightUserFromEmail(email);
             if (user == null) return false;
             return ValidateAuthentication(user, authentication);
         }
@@ -100,7 +100,7 @@ namespace CollaboraCal
 
         public string? Login(string email, string password)
         {
-            User? user = Application.Database.GetUserFromEmail(email);
+            User? user = Application.Database.GetLightUserFromEmail(email);
             if (user == null) return null;
 
             if (DoesUserHaveActiveSession(user))

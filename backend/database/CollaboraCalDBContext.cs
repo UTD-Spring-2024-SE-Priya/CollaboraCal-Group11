@@ -28,5 +28,6 @@ namespace CollaboraCal
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Calendar> Calendars => Set<Calendar>();
+        public DbSet<Event> Events => Set<Event>();
     }
 }
