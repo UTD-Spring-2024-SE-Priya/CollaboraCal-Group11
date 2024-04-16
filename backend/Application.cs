@@ -84,7 +84,8 @@ namespace CollaboraCal
             [FromHeader(Name = "Email")] string? email,
             [FromHeader(Name = "Password")] string? password,
             [FromHeader(Name = "ConfirmPassword")] string? confpassword,
-            [FromHeader(Name = "Name")] string? name)
+            [FromHeader(Name = "Name")] string? name
+        )
         {
             if (email == null || name == null || password == null || confpassword == null) return TypedResults.BadRequest();
             return TypedResults.Ok(Accounts.CreateUser(email, name, password, confpassword));
@@ -96,7 +97,13 @@ namespace CollaboraCal
             [FromBody] string? newName
         )
         {
-            if (email == null || newName == null || authentication == null) return TypedResults.BadRequest();
+            if (email == null || authentication == null) return TypedResults.BadRequest("Authentication headers missing");
+            if (!Sessions.ValidateAuthentication(email, authentication))
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            if (newName == null) return TypedResults.BadRequest("Missing body");
             bool success = Accounts.ChangeName(email, authentication, newName);
             if (success) return TypedResults.Ok();
             else return TypedResults.Unauthorized();
@@ -168,7 +175,7 @@ namespace CollaboraCal
             var organized = calendars.Select(a => new CalendarListResponse(a.ID, a.Name, a.Description)).ToList();
             string asJson = JsonConvert.SerializeObject(organized);
 
-            return TypedResults.Ok(organized);
+            return TypedResults.Ok(asJson);
         }
 
         private static IResult GetEventsDuringTimeFrame(
@@ -184,13 +191,20 @@ namespace CollaboraCal
             CalendarEventRequest? request = JsonConvert.DeserializeObject<CalendarEventRequest>(jsonBody);
             if (request == null) return TypedResults.BadRequest("Malformed body");
 
-            return TypedResults.Ok();
+            List<Event>? events = Database.GetEventsFromCalendarWithinTimeframe(request);
+            if (events == null) return TypedResults.BadRequest("Malformed request");
+
+            var organized = events.Select(a => new EventListResponse(a.Name, a.Description, a.Location, a.Start, a.End)).ToList();
+            string asJson = JsonConvert.SerializeObject(organized);
+
+            return TypedResults.Ok(asJson);
         }
 
 
         private record LoginResponse(string authentication, string email);
-
         private record CalendarListResponse(int id, string? name, string? description);
+        private record EventListResponse(string? name, string? description, string? location, DateTime start, DateTime end);
+
     }
 
 }

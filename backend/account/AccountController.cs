@@ -53,13 +53,11 @@ namespace CollaboraCal
         {
             User? user = Application.Database.GetLightUserFromEmail(email);
             if (user == null) return false;
-            if (Application.Sessions.ValidateAuthentication(user, authentication))
-            {
-                user.Name = newName;
-                Application.Database.Context.SaveChanges();
-                return true;
-            }
-            return false;
+
+            user.Name = newName;
+            Application.Database.Context.SaveChanges();
+            
+            return true;
         }
     }
 }
