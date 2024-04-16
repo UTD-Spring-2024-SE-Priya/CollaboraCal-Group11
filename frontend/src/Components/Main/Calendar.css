@@ -1,0 +1,59 @@
+.calendar {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    background-color: rgb(202, 202, 202);
+    color: #3c009d;
+    font-size: 20px;
+    
+  }
+  
+  .calendar td {
+    border: 1px solid #ddd;
+    padding: 0;
+    text-align: center;
+    width: 60px; /* Adjust the width of each cell */
+    height: 141px; /* Adjust the height of each cell */
+    position: relative; /* Make the position of the cell relative */
+  }
+  
+  .calendar th,
+  .calendar td.empty-cell {
+    background-color: rgb(202, 202, 202);
+  }
+  
+  .calendar-header {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(202, 202, 202);
+    color: #3c009d;
+    font-size: 48px;
+    font-weight: 700;
+  }
+  
+  .calendar-header button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 26px;
+    background-color: rgb(202, 202, 202);
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .calendar-header span {
+    font-size: 48px;
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
+  
+  .calendar-number {
+    position: absolute; /* Position the number absolutely within the cell */
+    top: 5px; /* Adjust the top position */
+    left: 20px; /* Adjust the left position */
+    font-size: 20px;
+  }
+  
