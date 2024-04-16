@@ -10,6 +10,10 @@ const Main = () => {
   const handleEventButtonClick = () => {
     navigate("/create-event");
   };
+
+  const handleCalendarButtonClick = () => {
+    navigate("/create-calendar");
+  };
   
   //Calendar 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -108,7 +112,7 @@ const Main = () => {
             <button className="eventButton" onClick={handleEventButtonClick}>Event</button>
           </div>
           <div classname='create-container'>
-            <button className="eventButton">Calendar </button>
+            <button className="calendarButton" onClick={handleCalendarButtonClick}>Calendar</button>
           </div>
           <div className="textbody2">My Calendars</div>
             <div className="underline"></div>
