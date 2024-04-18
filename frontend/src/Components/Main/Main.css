@@ -67,6 +67,7 @@ h1 {
   flex-direction: column;
   margin: 30px auto;
   align-items: center;
+  width: 100%;
 }
 
 .signout-section {
@@ -96,6 +97,8 @@ h1 {
   border-radius: 50px;
   font-size: 19px;
   font-weight: 700;
+  margin-bottom: 20px;
+  width: 100%;
   cursor: pointer;
 }
 .profile-picture {
@@ -128,7 +131,8 @@ h1 {
 
 .textCalendars {
   font-size: 18px;
-  margin-top: 5px;
+  margin-top: 20px;
+  
 }
 .underlinebody {
   width: 61px;

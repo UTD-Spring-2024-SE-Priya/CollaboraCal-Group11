@@ -14,6 +14,10 @@ const Main = () => {
   const handleCalendarButtonClick = () => {
     navigate("/create-calendar");
   };
+
+  const handleSignOut = () => {
+    navigate("/"); // Redirect to the login/signup page
+  };
   
   //Calendar 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -95,7 +99,7 @@ const Main = () => {
         <div className="headerColumnRight">
           {/* Content for the first right column */}
           <div className="signout-section">
-            <button className="signoutButton">Sign Out</button>
+          <button className="signoutButton" onClick={handleSignOut}>Sign Out</button>
             <div className="profile-picture">
               <img src={user_icon} alt="Profile" className="profile-img" />
             </div>      
@@ -110,10 +114,9 @@ const Main = () => {
           <div className="underline"></div>
           <div className='create-container'>
             <button className="eventButton" onClick={handleEventButtonClick}>Event</button>
-          </div>
-          <div classname='create-container'>
             <button className="calendarButton" onClick={handleCalendarButtonClick}>Calendar</button>
           </div>
+          
           <div className="textbody2">My Calendars</div>
             <div className="underline"></div>
             <div className='textCalendars'>
