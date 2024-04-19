@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CollaboraCal;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Data.Sqlite;
+using CollaboraCal.JsonRequests;
 
 namespace CollaboraCal.Testing
 {
@@ -70,6 +71,73 @@ namespace CollaboraCal.Testing
                 Assert.Inconclusive(DatabaseMigrationError);
             }
 
+        }
+
+        [TestMethod]
+        public void TestCreateCalendar()
+        {
+            try
+            {
+                NewCalendarData data;
+
+                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
+
+                Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
+                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("", "This calendar holds birthdays.")));
+                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "")));
+                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("", data = new("Birthdays", "This calendar holds birthdays")));
+                Assert.AreEqual(true, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
+
+                Application.Database.RemoveUserByEmail("mc1174471@gmail.com");
+
+            }
+            catch (SqliteException sqliteException)
+            {
+                Console.WriteLine($"SQLite Error: {sqliteException.SqliteErrorCode}");
+                Assert.Inconclusive(DatabaseMigrationError);
+            }
+        }
+
+        [TestMethod]
+        public void TestCreateEvent() 
+        {
+            try
+            {
+                NewEventData data;
+                DateTime timeStart = DateTime.Now;
+                DateTime timeEnd = DateTime.Now;
+                Assert.AreEqual(false, Application.CalendarManager.CreateEvent("mc1174471@gmail.com", 
+                    data = new("Trash", "Trash on Fridays at 7 pm", "Home", timeStart, timeEnd, 0)));
+                
+                Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
+
+                //TODO
+
+                Application.Database.RemoveUserByEmail("mc1174471@gmail.com");
+            }
+            catch (SqliteException sqliteException)
+            {
+                Console.WriteLine($"SQLite Error: {sqliteException.SqliteErrorCode}");
+                Assert.Inconclusive(DatabaseMigrationError);
+            }
+        }
+
+        [TestMethod]
+        public void TestChangePassword()
+        { 
+            try
+            {
+                Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
+
+                //TODO
+
+                Application.Database.RemoveUserByEmail("mc1174471@gmail.com");
+            }
+            catch (SqliteException sqliteException)
+            {
+                Console.WriteLine($"SQLite Error: {sqliteException.SqliteErrorCode}");
+                Assert.Inconclusive(DatabaseMigrationError);
+            }
         }
     }
 }
