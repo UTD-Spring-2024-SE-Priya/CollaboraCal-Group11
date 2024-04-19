@@ -59,5 +59,20 @@ namespace CollaboraCal
             
             return true;
         }
+
+        public bool ResetPassword(string email, string password, string confpassword)
+        {
+            User? user = Application.Database.GetLightUserFromEmail(email);
+            if (user == null) return false;
+
+            if(string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confpassword)) return false;
+            if(!password.Equals(confpassword)) return false;
+            if(password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsNumber)) return false;
+
+            user.PasswordHashData = new SecureHash<SHA256>(password);
+            Application.Database.Context.SaveChanges(); 
+
+            return true;
+        }
     }
 }

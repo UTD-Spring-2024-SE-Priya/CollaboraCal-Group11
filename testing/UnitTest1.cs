@@ -127,9 +127,16 @@ namespace CollaboraCal.Testing
         { 
             try
             {
+                Assert.AreEqual(false, Application.Accounts.ResetPassword("mc1174471@gmail.com", "Goodbye444", "Goodbye444"));
+                
                 Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
 
-                //TODO
+                Assert.AreEqual(false, Application.Accounts.ResetPassword("", "Hello444", "Hello444"));
+                Assert.AreEqual(false, Application.Accounts.ResetPassword("mc1174471@gmail.com", "", "Goodbye444"));
+                Assert.AreEqual(false, Application.Accounts.ResetPassword("mc1174471@gmail.com", "Goodbye444", ""));
+                Assert.AreEqual(false, Application.Accounts.ResetPassword("mc1174471@gmail.com", "Goodbye444", "Goodbye443"));
+                Assert.AreEqual(false, Application.Accounts.ResetPassword("mc1174471@gmail.com", "Goodbye", "Goodbye"));
+                Assert.AreEqual(true, Application.Accounts.ResetPassword("mc1174471@gmail.com", "Goodbye444", "Goodbye444"));
 
                 Application.Database.RemoveUserByEmail("mc1174471@gmail.com");
             }
