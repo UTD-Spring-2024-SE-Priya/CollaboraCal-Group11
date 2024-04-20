@@ -111,7 +111,18 @@ namespace CollaboraCal.Testing
                 
                 Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
 
-                //TODO
+                Assert.AreEqual(false, Application.CalendarManager.CreateEvent("mc1174471@gmail.com",
+                    data = new("Trash", "Trash on Fridays at 7 pm", "Home", timeStart, timeEnd, 0)));
+
+                Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", new("Tasks", "This calendar holds home tasks"));
+
+                User? user = Application.Database.GetLightUserFromEmail("mc1174471@gmail.com");
+                Assert.AreEqual(false, Application.CalendarManager.CreateEvent("", 
+                    data = new("Trash", "Trash on Fridays at 7 pm", "Home", timeStart, timeEnd, user.Calendars[0].ID)));
+                Assert.AreEqual(false, Application.CalendarManager.CreateEvent("mc1174471@gmail.com",
+                    data = new("Trash", "Trash on Fridays at 7 pm", "Home", timeStart, timeEnd, user.Calendars[0].ID + 1)));
+                Assert.AreEqual(true, Application.CalendarManager.CreateEvent("mc1174471@gmail.com",
+                    data = new("Trash", "Trash on Fridays at 7 pm", "Home", timeStart, timeEnd, user.Calendars[0].ID)));
 
                 Application.Database.RemoveUserByEmail("mc1174471@gmail.com");
             }
