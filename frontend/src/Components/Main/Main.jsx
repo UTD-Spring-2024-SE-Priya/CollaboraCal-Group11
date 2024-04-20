@@ -3,11 +3,18 @@ import { useNavigate, useLocation } from 'react-router-dom'; // Import useNaviga
 import './Main.css'; // Import Main.css for styling
 import './Calendar.css'; // Import Calendar.css for calendar styling
 import user_icon from '../Assets/profilePicture.png';
+import editIcon from '../Assets/edit.png';
+import deleteIcon from '../Assets/trash.png'; // Add delete icon import
 
 const Main = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [events, setEvents] = useState([]);
+  //const [currentDate, setCurrentDate] = useState(new Date());
+  const [calendars, setCalendars] = useState(['Calendar 1']); // Initial calendar
+  const [editMode, setEditMode] = useState(Array(calendars.length).fill(false)); // Edit mode for each calendar
+  const [checkboxColors, setCheckboxColors] = useState(Array(calendars.length).fill('#000000')); // Initial color for each checkbox
+  const [showCreateEvent, setShowCreateEvent] = useState(false); // State to toggle CreateEvent visibility
 
   useEffect(() => {
     // Check if location state contains event details
@@ -54,6 +61,40 @@ const Main = () => {
     const year = date.getFullYear();
     const month = date.getMonth();
     return new Date(year, month, 1).getDay();
+  };
+
+  const addCalendar = () => {
+    const newCalendarName = `Calendar ${calendars.length + 1}`;
+    setCalendars([...calendars, newCalendarName]);
+    setEditMode([...editMode, false]);
+    setCheckboxColors([...checkboxColors, '#000000']);
+  };
+
+  const toggleEditMode = (index) => {
+    const updatedEditMode = [...editMode];
+    updatedEditMode[index] = !updatedEditMode[index];
+    setEditMode(updatedEditMode);
+  };
+
+  const deleteCalendar = (index) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this calendar?");
+    if (isConfirmed) {
+      const updatedCalendars = [...calendars];
+      updatedCalendars.splice(index, 1);
+      setCalendars(updatedCalendars);
+      const updatedEditMode = [...editMode];
+      updatedEditMode.splice(index, 1);
+      setEditMode(updatedEditMode);
+      const updatedColors = [...checkboxColors];
+      updatedColors.splice(index, 1);
+      setCheckboxColors(updatedColors);
+    }
+  };
+
+  const handleColorChange = (index, color) => {
+    const updatedColors = [...checkboxColors];
+    updatedColors[index] = color;
+    setCheckboxColors(updatedColors);
   };
 
 // Update rendering logic to include events
@@ -141,19 +182,30 @@ const renderCalendar = () => {
           <div className="underline"></div>
           <div className='create-container'>
             <button className="eventButton" onClick={handleEventButtonClick}>Event</button>
-            <button className="calendarButton" onClick={handleCalendarButtonClick}>Calendar</button>
+            <button className="calendarButton" onClick={addCalendar}>Calendar</button>
           </div>
           
           <div className="textbody2">My Calendars</div>
             <div className="underline"></div>
-            <div className='textCalendars'>
-              <div className="square1"></div> {/* New div for the square */}
-              Calendar 1
-            </div>
-            <div className='textCalendars'>
-              <div className="square2"></div> {/* New div for the square */}
-              Calendar 2
-            </div>
+            {calendars.map((calendar, index) => (
+              <div key={index} className='textCalendars'>
+                <input type="checkbox" className="calendar-checkbox" style={{ backgroundColor: checkboxColors[index] }} />
+                {editMode[index] ? (
+                  <div>
+                    <input type="text" value={calendar} onChange={(e) => {
+                      const updatedCalendars = [...calendars];
+                      updatedCalendars[index] = e.target.value;
+                      setCalendars(updatedCalendars);
+                    }} />
+                    <input type="color" value={checkboxColors[index]} onChange={(e) => handleColorChange(index, e.target.value)} style={{ width: '20px', height: '20px', border: 'none', padding: '0', marginLeft: '10px' }} />
+                    <img src={deleteIcon} alt="Delete" className="deleteButton" onClick={() => deleteCalendar(index)} />
+                  </div>
+                ) : (
+                  <span>{calendar}</span>
+                )}
+                <img src={editIcon} alt="Edit" className="editButton" onClick={() => toggleEditMode(index)} />
+              </div>
+            ))}
         </div>
         <div className="bodyColumnRight">
           {/* Calendar header */}
