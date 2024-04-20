@@ -20,17 +20,15 @@ const CreateEvent = () =>  {
 
         // Check if date and time are valid
         if (!isValidDate(date) || !isValidTime(time)) {
-            setError("Please enter a valid date.");
+            setError("Please enter a valid date and time.");
             return;
         }
 
-        if (!isValidTime(time)) {
-            setError("Please enter a valid time.");
-            return;
-        }
-
-        // If all validations pass, navigate to home
-        navigate("/home");
+        // If all validations pass, navigate to home with all information
+        console.log("Submitting event:", { title, date, time, description }); // Debugging statement
+        navigate("/home", {
+            state: { title, date, time, description }
+        });
     };
 
     const isValidDate = (date) => {

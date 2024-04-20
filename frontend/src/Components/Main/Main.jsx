@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import './Main.css'; // Import Main.css for styling
 import './Calendar.css'; // Import Calendar.css for calendar styling
 import user_icon from '../Assets/profilePicture.png';
 
 const Main = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    // Check if location state contains event details
+    if (location.state && location.state.title) {
+      // Add the new event to the events array
+      const { title, date, time, description } = location.state;
+      setEvents([...events, { title, date, time, description }]);
+    }
+    
+    console.log(events); // Log the events array
+    
+  }, [location.state, events]); // Include events in the dependency array  
 
   const handleEventButtonClick = () => {
     navigate("/create-event");
@@ -42,40 +56,53 @@ const Main = () => {
     return new Date(year, month, 1).getDay();
   };
 
-  const renderCalendar = () => {
-    const totalDays = daysInMonth(currentDate);
-    const startDay = startDayOfMonth(currentDate);
+// Update rendering logic to include events
+const renderCalendar = () => {
+  const totalDays = daysInMonth(currentDate);
+  const startDay = startDayOfMonth(currentDate);
 
-    const days = [];
+  const days = [];
 
-    let dayCount = 1;
-    // Create table rows
-    for (let i = 0; i < 5; i++) {
-      const cells = [];
-      // Create table cells for the days of the week
-      for (let j = 0; j < 7; j++) {
-        if (i === 0 && j < startDay) {
-          // Empty cells for days before the start of the month
-          cells.push(<td key={`empty-${j}`} className="empty-cell"></td>);
-        } else if (dayCount <= totalDays) {
-          // Cells with day numbers for the current month
-          cells.push(
-            <td key={`day-${dayCount}`} className="calendar-cell">
-              <div className="calendar-number">{dayCount}</div>
-            </td>
-          );
-          dayCount++;
-        } else {
-          // Empty cells for days after the end of the month
-          cells.push(<td key={`empty-${j}`} className="empty-cell"></td>);
-        }
+  let dayCount = 1;
+  // Create table rows
+  for (let i = 0; i < 5; i++) {
+    const cells = [];
+    // Create table cells for the days of the week
+    for (let j = 0; j < 7; j++) {
+      if (i === 0 && j < startDay) {
+        // Empty cells for days before the start of the month
+        cells.push(<td key={`empty-${j}`} className="empty-cell"></td>);
+      } else if (dayCount <= totalDays) {
+        // Cells with day numbers for the current month
+        const event = events.find(event => {
+          const eventDate = new Date(event.date);
+          return eventDate.getDate() === dayCount && eventDate.getMonth() === currentDate.getMonth();
+        });
+
+        cells.push(
+          <td key={`day-${dayCount}`} className="calendar-cell">
+            <div className="calendar-number">{dayCount}</div>
+            {event && (
+              <div className="event-container">
+                <div className="event-title">{event.title}</div>
+                <div className="event-time">{event.time}</div>
+              </div>
+            )}
+          </td>
+        );
+        dayCount++;
+      } else {
+        // Empty cells for days after the end of the month
+        cells.push(<td key={`empty-${j}`} className="empty-cell"></td>);
       }
-      // Create table row
-      days.push(<tr key={`row-${i}`}>{cells}</tr>);
     }
+    // Create table row
+    days.push(<tr key={`row-${i}`}>{cells}</tr>);
+  }
 
-    return days;
-  };
+  return days;
+};
+
 
   // Custom text for days of the week
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

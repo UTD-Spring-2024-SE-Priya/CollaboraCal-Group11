@@ -57,3 +57,36 @@
     font-size: 20px;
   }
   
+/* Update Calendar CSS to style events */
+.event-container {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  width: calc(100% - 10px);
+  background-color: #4c00b4;
+  color: #fff;
+  padding: 2px;
+  font-size: 12px;
+}
+
+.event-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.event-time {
+  font-size: 10px;
+}
+
+/* Add styling for different event types */
+.event-type-1 {
+  background-color: #4c00b4;
+}
+
+.event-type-2 {
+  background-color: #f0123f;
+}
+
+/* Add temporary background color to all calendar cells */
+
+
