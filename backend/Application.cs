@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using CollaboraCal.JsonRequests;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 
 namespace CollaboraCal
 {
@@ -54,6 +55,7 @@ namespace CollaboraCal
             app.MapPost("/login", Login).WithName("Login").WithOpenApi();
             app.MapPost("/newuser", CreateUser).WithName("New User").WithOpenApi();
             app.MapPost("/changename", ChangeName).WithName("Update Name").WithOpenApi();
+            app.MapPost("/resetpassword", ChangePassword).WithName("Reset Password").WithOpenApi();
 
             // Calendar
             app.MapPost("/newcalendar", CreateCalendar).WithName("New Calendar").WithOpenApi();
@@ -200,6 +202,21 @@ namespace CollaboraCal
             return TypedResults.Ok(asJson);
         }
 
+        private static IResult ChangePassword(
+            [FromHeader(Name = "Email")] string? email,
+            [FromHeader(Name = "Authentication")] string? authentication,
+            [FromBody] string? newPassword
+        )
+        {
+            if (email == null || authentication == null) return TypedResults.BadRequest();
+            if (!Sessions.ValidateAuthentication(email, authentication)) return TypedResults.Unauthorized();
+
+            if (newPassword == null) return TypedResults.BadRequest("Missing body");
+            bool success = Accounts.ResetPassword(email, newPassword, newPassword);
+
+            if (success) return TypedResults.Ok("Password changed");
+            else return TypedResults.BadRequest();
+        }
 
         private record LoginResponse(string authentication, string email);
         private record CalendarListResponse(int id, string? name, string? description);
