@@ -4,8 +4,8 @@
     margin: auto;
     margin-top: 70px;
     margin-bottom: 50px;
-    width: 600px;
-    background: #fff;
+    width: 685px;
+    background: #ffffff;
     padding-bottom: 20px;
 }
 
@@ -43,6 +43,7 @@
     align-items: center;
     margin-left: 30px;
     margin-right: 20px;
+    width: 632px;
 }
 
 .input, .description-input {
@@ -108,4 +109,27 @@
     display: flex;
     flex-direction: column;
     margin-top: 20px;
+}
+
+.date-input-container{
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+    margin-right: 20px;
+    width: 10px 
+}
+
+.date-info {
+    color: #797979;
+    font-size: 24px;
+    margin-right: 90px;
+    
+}
+
+.date-input {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 2000px;
 }
