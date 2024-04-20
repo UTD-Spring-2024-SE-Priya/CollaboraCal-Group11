@@ -104,7 +104,7 @@ namespace CollaboraCal
 
         public List<Event>? GetEventsFromCalendarWithinTimeframe(CalendarEventRequest request)
         {
-            Calendar calendar = GetHeavyCalendar(request.CalendarID);
+            Calendar? calendar = GetHeavyCalendar(request.CalendarID);
             TimelineManager timeline = new TimelineManager(request.StartTime, request.EndTime);
             return calendar?.Events?.Where(a => timeline.Overlaps(a.Start, a.End)).ToList();
         }
