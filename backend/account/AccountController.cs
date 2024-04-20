@@ -65,6 +65,8 @@ namespace CollaboraCal
             User? user = Application.Database.GetLightUserFromEmail(email);
             if (user == null) return false;
 
+            Console.WriteLine(user.EMail);
+
             if(string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confpassword)) return false;
             if(!password.Equals(confpassword)) return false;
             if(password.Length < 8 || !password.Any(char.IsUpper) || !password.Any(char.IsLower) || !password.Any(char.IsNumber)) return false;

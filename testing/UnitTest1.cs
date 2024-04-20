@@ -83,6 +83,7 @@ namespace CollaboraCal.Testing
                 Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
 
                 Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
+
                 Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("", "This calendar holds birthdays.")));
                 Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "")));
                 Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("", data = new("Birthdays", "This calendar holds birthdays")));
@@ -134,7 +135,7 @@ namespace CollaboraCal.Testing
         }
 
         [TestMethod]
-        public void TestChangePassword()
+        public void TestResetPassword()
         { 
             try
             {

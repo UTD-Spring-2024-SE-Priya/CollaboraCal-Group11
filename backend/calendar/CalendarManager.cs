@@ -23,6 +23,7 @@ public class CalendarManager
 
     public bool DoesCalendarBelongToUser(string email, Calendar calendar)
     {
+        if(calendar == null) return false;
         if (calendar.Users == null)
         {
             throw new Exception("DoesCalendarBelongToUser(string,Calendar) ONLY accents HEAVY Calendar");
@@ -36,6 +37,7 @@ public class CalendarManager
 
         if (user == null) return false;
         if (user.Calendars?.Count >= USER_CALENDAR_LIMIT) return false;
+        if(string.IsNullOrEmpty(data.Name) || string.IsNullOrEmpty(data.Description)) return false;
 
         Calendar calendar = new Calendar()
         {
@@ -60,6 +62,8 @@ public class CalendarManager
         {
             return false;
         }
+
+        
 
         Event ev = new Event()
         {

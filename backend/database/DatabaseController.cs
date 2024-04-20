@@ -85,13 +85,13 @@ namespace CollaboraCal
             return user?.Calendars?.ToList();
         }
 
-        public Calendar GetHeavyCalendar(int calendarID)
+        public Calendar? GetHeavyCalendar(int calendarID)
         {
             return dbContext.Calendars
                 .Where(a => a.ID == calendarID)
                 .Include(a => a.Events)
                 .Include(a => a.Users)
-                .Single();
+                .SingleOrDefault();
         }
 
         //      EVENTS
