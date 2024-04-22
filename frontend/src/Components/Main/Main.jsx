@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import './Main.css'; // Import Main.css for styling
-import './Calendar.css'; // Import Calendar.css for calendar styling
+import '../CalendarView/Calendar.css'; // Import Calendar.css for calendar styling
 import user_icon from '../Assets/profilePicture.png';
 import editIcon from '../Assets/edit.png';
 import deleteIcon from '../Assets/trash.png'; // Add delete icon import
