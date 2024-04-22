@@ -5,6 +5,7 @@ import './Calendar.css'; // Import Calendar.css for calendar styling
 import user_icon from '../Assets/profilePicture.png';
 import editIcon from '../Assets/edit.png';
 import deleteIcon from '../Assets/trash.png'; // Add delete icon import
+import * as req from '../../Requests';
 
 const Main = () => {
   const navigate = useNavigate();
@@ -37,6 +38,11 @@ const Main = () => {
   };
 
   const handleSignOut = () => {
+
+    let header = req.createAuthHeaders()
+    req.postRequest("/logout", header)
+    req.deleteAuthenticationCookie()
+
     navigate("/"); // Redirect to the login/signup page
   };
   

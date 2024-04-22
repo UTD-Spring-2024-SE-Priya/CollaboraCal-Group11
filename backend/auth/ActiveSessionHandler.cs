@@ -103,17 +103,17 @@ namespace CollaboraCal
             User? user = Application.Database.GetLightUserFromEmail(email);
             if (user == null) return null;
 
-            if (DoesUserHaveActiveSession(user))
-            {
-                return activeSessions[user.ID].Authentication;
-            }
-
             var suppliedHash = new SecureHash<SHA256>(password);
             var realHash = user.PasswordHashData;
             if (ReferenceEquals(realHash, null))
                 throw new Exception("User password hash is null here. This should never be null.");
             if (suppliedHash == realHash)
             {
+                if (DoesUserHaveActiveSession(user))
+                {
+                    return activeSessions[user.ID].Authentication;
+                }
+
                 string authcode = NewGUID128String();
                 LoginSession session = new LoginSession
                 {
@@ -128,6 +128,18 @@ namespace CollaboraCal
 
             return null;
 
+        }
+
+        public bool Logout(string email)
+        {
+            User? user = Application.Database.GetLightUserFromEmail(email);
+            if (user == null) return false;
+            if(activeSessions.ContainsKey(user.ID))
+            {
+                activeSessions.Remove(user.ID);
+                return true;
+            }
+            return false;
         }
 
     }

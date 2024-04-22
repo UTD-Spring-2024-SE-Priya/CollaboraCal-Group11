@@ -56,8 +56,8 @@ public class CalendarManager
 
     public bool CreateEvent(string email, NewEventData data)
     {
-
-        Calendar heavyCalendar = Application.Database.GetHeavyCalendar(data.CalendarID);
+        Calendar? heavyCalendar = Application.Database.GetHeavyCalendar(data.CalendarID);
+        if (heavyCalendar == null) return false;
         if (!DoesCalendarBelongToUser(email, heavyCalendar))
         {
             return false;

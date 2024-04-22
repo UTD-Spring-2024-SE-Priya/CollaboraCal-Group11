@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using CollaboraCal.JsonRequests;
 using Microsoft.EntityFrameworkCore.Storage.Json;
+using SQLitePCL;
 
 namespace CollaboraCal
 {
@@ -34,6 +35,16 @@ namespace CollaboraCal
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(options =>
+                options.AddPolicy(name: "AllowReactLocalServer", policy => 
+                {
+                    policy
+                        .AllowAnyHeader()
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod();
+                    //policy.WithOrigins("https://localhost:3000", "http://localhost:3000", "localhost:3000");
+                }
+            ));
 
             var app = builder.Build();
 
@@ -47,15 +58,18 @@ namespace CollaboraCal
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowReactLocalServer");
 
             // Default
             app.MapGet("/", DefaultResponse).WithOpenApi();
 
             // User
             app.MapPost("/login", Login).WithName("Login").WithOpenApi();
+            app.MapPost("/logout", Logout).WithName("Logout").WithOpenApi();
             app.MapPost("/newuser", CreateUser).WithName("New User").WithOpenApi();
             app.MapPost("/changename", ChangeName).WithName("Update Name").WithOpenApi();
             app.MapPost("/resetpassword", ChangePassword).WithName("Reset Password").WithOpenApi();
+            app.MapGet("/validate", CheckAuthenticationValidity).WithName("Validate Authentication").WithOpenApi();
 
             // Calendar
             app.MapPost("/newcalendar", CreateCalendar).WithName("New Calendar").WithOpenApi();
@@ -73,24 +87,40 @@ namespace CollaboraCal
         }
 
         private static IResult Login(
-            [FromHeader(Name = "EMail")] string? email,
+            [FromHeader(Name = "Email")] string? email,
             [FromHeader(Name = "Password")] string? password)
         {
-            if (email == null || password == null) return TypedResults.BadRequest("Missing 'EMail' and/or 'Password' headers");
+            if (email == null || password == null) 
+                return TypedResults.BadRequest("Missing 'Email' and/or 'Password' headers");
             var result = Sessions.Login(email, password);
             if (result == null) return TypedResults.Unauthorized();
             return TypedResults.Ok(new LoginResponse(result, email));
         }
 
+        private static IResult Logout(
+            [FromHeader(Name = "Email")] string? email,
+            [FromHeader(Name = "Authentication")] string? authentication
+        )
+        {
+            if (email == null || authentication == null) 
+                return TypedResults.BadRequest("Missing 'Email' and/or 'Password' headers");
+            if (!Sessions.ValidateAuthentication(email, authentication))
+                return TypedResults.Unauthorized();
+            
+            _ = Sessions.Logout(email);
+            return TypedResults.Ok();
+        }
+
         private static IResult CreateUser(
             [FromHeader(Name = "Email")] string? email,
             [FromHeader(Name = "Password")] string? password,
-            [FromHeader(Name = "ConfirmPassword")] string? confpassword,
-            [FromHeader(Name = "Name")] string? name
+//            [FromHeader(Name = "ConfirmPassword")] string? confpassword,
+            [FromBody] string? name
         )
         {
-            if (email == null || name == null || password == null || confpassword == null) return TypedResults.BadRequest();
-            return TypedResults.Ok(Accounts.CreateUser(email, name, password, confpassword));
+            if (email == null || name == null || password == null) return TypedResults.BadRequest();
+            Accounts.CreateUser(email, name, password, password);
+            return Login(email, password);
         }
 
         private static IResult ChangeName(
@@ -107,6 +137,17 @@ namespace CollaboraCal
 
             if (newName == null) return TypedResults.BadRequest("Missing body");
             bool success = Accounts.ChangeName(email, authentication, newName);
+            if (success) return TypedResults.Ok();
+            else return TypedResults.Unauthorized();
+        }
+
+        private static IResult CheckAuthenticationValidity(
+            [FromHeader(Name = "Email")] string? email,
+            [FromHeader(Name = "Authentication")] string? authentication
+        )
+        {
+            if (email == null || authentication == null) return TypedResults.BadRequest();
+            bool success = Sessions.ValidateAuthentication(email, authentication);
             if (success) return TypedResults.Ok();
             else return TypedResults.Unauthorized();
         }
