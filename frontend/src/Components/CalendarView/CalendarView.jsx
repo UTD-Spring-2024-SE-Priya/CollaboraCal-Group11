@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate from react-router-dom
-import '../Main/Main.css'; // Import Main.css for styling
 import './Calendar.css'; // Import Calendar.css for calendar styling
 import './CalendarView.css'; // Import CalendarView.css for calendar styling
 import user_icon from '../Assets/profilePicture.png';
@@ -172,12 +171,12 @@ const CalendarView = () => {
         <div className="background">
             <div className="containerHeader">
                 {/* First pair of columns */}
-                <div className="headerColumnLeft">
+                <div className="headerColumnLeftC">
                     {/* Content for the first left column */
                         <button className="backButton" onClick={handleBackButton}>Back</button>
                     }
                 </div>
-                <div className="headerColumnRight">
+                <div className="headerColumnRightC">
                     {/* Content for the first right column */}
                     <div className="signout-section">
                         <button className="signoutButton" onClick={handleSignOut}>Sign Out</button>
@@ -189,7 +188,7 @@ const CalendarView = () => {
             </div>
 
             <div className="containerBody">
-                <div className="bodyColumnLeft">
+                <div className="bodyColumnLeftC">
                     {/* You can add any content you want for the left column */}
                     <div className="textbody">Create</div>
                     <div className="underline"></div>
@@ -220,7 +219,7 @@ const CalendarView = () => {
               </div>
             ))} */}
                 </div>
-                <div className="bodyColumnRight">
+                <div className="bodyColumnRightC">
                     {/* Calendar header */}
                     <div className="calendar-header">
                         <button onClick={prevMonth}>&lt;</button>

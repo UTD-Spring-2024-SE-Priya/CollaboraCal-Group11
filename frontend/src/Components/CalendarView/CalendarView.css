@@ -1,3 +1,95 @@
+.background {
+    width: 100%;
+}
+
+.containerHeaderC {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1800px;
+    background: #fff;
+    border: 2px solid black;
+    border-bottom: none;
+}
+
+.containerBodyC {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    max-width: 1800px;
+    background: #fff;
+    padding-bottom: 20px;
+    border: 2px solid black;
+    border-top: none;
+}
+
+.headerColumnLeftC {
+    width: 83%;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.headerColumnRightC {
+    width: 17%;
+    padding: 10px;
+    padding-right: 20px;
+    background-color: #f0f0f0;
+    height: 55px;
+}
+
+.bodyColumnLeftC {
+    width: 17%;
+    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    /* Use flexbox */
+    flex-direction: column;
+    /* Stack elements vertically */
+    align-items: center;
+    /* Center content horizontally */
+}
+
+
+.bodyColumnRightC {
+    width: 83%;
+    padding-right: 20px;
+    background-color: #ffffff;
+
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+}
+
+.create-containerC {
+    display: flex;
+    flex-direction: column;
+    margin: 30px auto;
+    align-items: center;
+}
+
+.signout-sectionC {
+    display: flex;
+    align-items: center;
+}
+
+.signoutButton {
+    width: 200px;
+    height: 40px;
+    color: #fff;
+    background: #4c00b4;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    margin-right: 45px;
+    cursor: pointer;
+}
+
 .backButton {
     width: 150px;
     height: 35px;
@@ -8,4 +100,114 @@
     font-weight: 700;
     margin-left: 45px;
     cursor: pointer;
-  }
+}
+
+.calendarButton,
+.eventButton {
+    width: 250px;
+    height: 40px;
+    color: #fff;
+    background: #4c00b4;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 30px;
+}
+
+.profile-picture {
+    width: 70px;
+    height: 50px;
+    background-color: #ccc;
+    border-radius: 50%;
+}
+
+.profile-img {
+    width: 100%;
+    /* Set the width to 100% to resize the image */
+    height: auto;
+    /* Maintain aspect ratio */
+}
+
+.textbody {
+    align-items: center;
+    color: #3c009d;
+    font-size: 24px;
+    font-weight: 700;
+    padding-top: 20px;
+}
+
+.textbody2 {
+    align-items: center;
+    color: #3c009d;
+    font-size: 24px;
+    font-weight: 700;
+    padding-top: 100px;
+}
+
+.textCalendars {
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+.underlinebody {
+    width: 61px;
+    height: 6px;
+    background: #3c009d;
+    border-radius: 9px;
+}
+
+.square1 {
+    width: 12px;
+    height: 12px;
+    background-color: #4c00b4;
+    /* Set the background color of the square */
+    display: inline-block;
+    margin-left: 5px;
+    /* Adjust the margin as needed */
+}
+
+.square2 {
+    width: 12px;
+    height: 12px;
+    background-color: #f0123f;
+    /* Set the background color of the square */
+    display: inline-block;
+    margin-left: 5px;
+    /* Adjust the margin as needed */
+}
+
+@media screen and (max-width: 1620px) {
+    .containerHeader {
+        width: 92%;
+    }
+
+    .containerBody {
+        width: 92%;
+    }
+}
+
+.editButton {
+    font-size: 1px;
+    width: 15px;
+    height: 15px;
+    margin-left: 3px;
+}
+
+/* Add this CSS to adjust the layout */
+.textCalendars {
+    display: flex;
+    align-items: center;
+
+}
+
+.textCalendars input[type="text"] {
+    flex-grow: 1;
+    box-sizing: border-box;
+}
+
+.deleteButton {
+    width: 20px;
+    height: 20px;
+    margin-left: 3px;
+}
