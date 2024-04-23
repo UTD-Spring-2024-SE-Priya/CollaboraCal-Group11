@@ -6,31 +6,87 @@ import user_icon from '../Assets/profilePicture.png';
 import editIcon from '../Assets/edit.png';
 import deleteIcon from '../Assets/trash.png'; // Add delete icon import
 import * as req from '../../Requests';
+import EventData from './EventSerialize';
 
-const CalendarView = () => {
+const CalendarView = ({ route }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [events, setEvents] = useState([]);
+
     //const [currentDate, setCurrentDate] = useState(new Date());
     //const [calendars, setCalendars] = useState(['Calendar 1']); // Initial calendar
     //   const [editMode, setEditMode] = useState(Array(calendars.length).fill(false)); // Edit mode for each calendar
     //   const [checkboxColors, setCheckboxColors] = useState(Array(calendars.length).fill('#000000')); // Initial color for each checkbox
     const [showCreateEvent, setShowCreateEvent] = useState(false); // State to toggle CreateEvent visibility
 
+    // useEffect(() => {
+    //     // Check if location state contains event details
+    //     if (location.state && location.state.title) {
+    //         // Add the new event to the events array
+    //         const { title, date, time, description } = location.state;
+    //         setEvents([...events, { title, date, time, description }]);
+
+    //         console.log(events)
+    //     }
+
+    //     console.log(events); // Log the events array
+
+    // }, [location.state, events]); // Include events in the dependency array  
+
+    const loadEvents = async (response) => {
+        if (response.status == 200) {
+            let data = await response.json()
+
+            // constructor(id, name, description, date, time)
+            let newArray = JSON.parse(data).map(x => new EventData(x.id, x.name, x.description, x.start))
+            setEvents(newArray)
+        }
+        else {
+            console.log("Events failed to load")
+            navigate("/home")
+        }
+    }
+
+    const queryEvents = () => {
+
+
+        /*
+        [JsonProperty("start")] DateTime StartTime,
+        [JsonProperty("end")] DateTime EndTime,
+        [JsonProperty("calendarID")] int CalendarID
+        */
+
+        let headers = req.createAuthHeaders()
+        let body = JSON.stringify({
+            start: "1970-01-01 12:00:00",
+            end: "2038-01-01 12:00:00",
+            calendarID: location.state.id,
+        })
+
+        // console.log(body)
+
+        req.postRequest("/getevents", headers, body)
+            .then(loadEvents)
+            .catch(r => console.log(r));
+
+    }
+
     useEffect(() => {
-        // Check if location state contains event details
-        if (location.state && location.state.title) {
-            // Add the new event to the events array
-            const { title, date, time, description } = location.state;
-            setEvents([...events, { title, date, time, description }]);
+        if (location.state == null) {
+            navigate("/home")
+            return;
+        }
+        if (location.state.id == null) {
+            navigate("/home")
+            return;
         }
 
-        console.log(events); // Log the events array
+        queryEvents()
 
-    }, [location.state, events]); // Include events in the dependency array  
+    }, [])
 
     const handleEventButtonClick = () => {
-        navigate("/create-event");
+        navigate("/create-event", { state: { id: location.state.id } });
     };
 
     const handleCalendarButtonClick = () => {
@@ -107,6 +163,16 @@ const CalendarView = () => {
     //     setCheckboxColors(updatedColors);
     //   };
 
+    const deleteEvent = (id) => {
+
+        let newArray = events.filter(a => a.ID !== id);
+        setEvents(newArray);
+
+        let headers = req.createAuthHeaders()
+        req.postRequest("/deleteevent", headers, id)
+            .catch(r => console.log(r))
+    }
+
     // Update rendering logic to include events
     const renderCalendar = () => {
         const totalDays = daysInMonth(currentDate);
@@ -115,6 +181,9 @@ const CalendarView = () => {
         const days = [];
 
         let dayCount = 1;
+
+        let iterDate = new Date(currentDate);
+
         // Create table rows
         for (let i = 0; i < 5; i++) {
             const cells = [];
@@ -125,18 +194,27 @@ const CalendarView = () => {
                     cells.push(<td key={`empty-${j}`} className="empty-cell"></td>);
                 } else if (dayCount <= totalDays) {
                     // Cells with day numbers for the current month
-                    const event = events.find(event => {
-                        const eventDate = new Date(event.date);
-                        return eventDate.getDate() === dayCount && eventDate.getMonth() === currentDate.getMonth();
+
+                    iterDate.setDate(dayCount)
+
+                    const event = events.find(e => {
+                        const eventDate = e.Date;
+
+                        // console.log(`${eventDate.getMonth()}/${eventDate.getDate()}/${eventDate.getFullYear()}`)
+                        // console.log(`${iterDate.getMonth()}/${iterDate.getDate()}/${iterDate.getFullYear()}`)
+
+                        return eventDate.getDate() === iterDate.getDate()
+                            && eventDate.getMonth() === iterDate.getMonth()
+                            && eventDate.getFullYear() === iterDate.getFullYear();
                     });
 
                     cells.push(
                         <td key={`day-${dayCount}`} className="calendar-cell">
                             <div className="calendar-number">{dayCount}</div>
                             {event && (
-                                <div className="event-container">
-                                    <div className="event-title">{event.title}</div>
-                                    <div className="event-time">{event.time}</div>
+                                <div className="event-container" onClick={() => deleteEvent(event.ID)}>
+                                    <div className="event-title">{event.Name}</div>
+                                    <div className="event-time">{event.Time}</div>
                                 </div>
                             )}
                         </td>

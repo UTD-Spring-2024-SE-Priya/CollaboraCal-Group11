@@ -11,5 +11,5 @@ public class Event
     public string? Location { get; set; }
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
-    public Calendar? Calendar;
+    public Calendar? Calendar { get; set; }
 }

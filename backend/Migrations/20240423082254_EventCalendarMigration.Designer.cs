@@ -3,6 +3,7 @@ using System;
 using CollaboraCal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollaboraCal.Migrations
 {
     [DbContext(typeof(CollaboraCalDBContext))]
-    partial class CollaboraCalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240423082254_EventCalendarMigration")]
+    partial class EventCalendarMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");

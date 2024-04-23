@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using CollaboraCal.JsonRequests;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CollaboraCal;
 
@@ -31,13 +32,13 @@ public class CalendarManager
         return calendar.Users.Exists(a => a.EMail == email);
     }
 
-    public bool CreateCalendar(string ownerEmail, NewCalendarData data)
+    public Calendar? CreateCalendar(string ownerEmail, NewCalendarData data)
     {
         User? user = Application.Database.GetHeavyUserFromEmail(ownerEmail);
 
-        if (user == null) return false;
-        if (user.Calendars?.Count >= USER_CALENDAR_LIMIT) return false;
-        if(string.IsNullOrEmpty(data.Name) || string.IsNullOrEmpty(data.Description)) return false;
+        if (user == null) return null;
+        if (user.Calendars?.Count >= USER_CALENDAR_LIMIT) return null;
+        if(string.IsNullOrEmpty(data.Name) || string.IsNullOrEmpty(data.Description)) return null;
 
         Calendar calendar = new Calendar()
         {
@@ -51,6 +52,25 @@ public class CalendarManager
         user.Calendars?.Add(calendar);
         Application.Database.AddCalendar(calendar);
 
+        return calendar;
+    }
+
+    public bool DeleteCalendar(int calendarID)
+    {
+        Calendar? calendar = Application.Database.GetHeavyCalendar(calendarID);
+        if (calendar == null) return false;
+        if (calendar.Users == null) return false;
+
+        foreach(User user in calendar.Users)
+        {
+            User? heavy = Application.Database.GetHeavyUserFromID(user.ID);
+            if (heavy == null) continue;
+
+            heavy.Calendars?.RemoveAll(a => a.ID == calendar.ID);
+        }
+
+        Application.Database.Context.Calendars.Remove(calendar);
+        Application.Database.Context.SaveChanges();
         return true;
     }
 
@@ -58,12 +78,11 @@ public class CalendarManager
     {
         Calendar? heavyCalendar = Application.Database.GetHeavyCalendar(data.CalendarID);
         if (heavyCalendar == null) return false;
+
         if (!DoesCalendarBelongToUser(email, heavyCalendar))
         {
             return false;
         }
-
-        
 
         Event ev = new Event()
         {
@@ -75,9 +94,25 @@ public class CalendarManager
             Calendar = heavyCalendar,
         };
 
+        heavyCalendar.Events?.Add(ev);
         Application.Database.AddEvent(ev);
 
         return true;
+    }
+
+    public bool DeleteEvent(string email, int eventID)
+    {
+        Event? e = Application.Database.GetEventFromID(eventID);
+        if (e == null) return false;
+        if (e.Calendar == null) return false;
+
+        if (DoesCalendarBelongToUser(email, e.Calendar.ID))
+        {
+            Application.Database.Context.Events.Remove(e);
+            Application.Database.Context.SaveChanges();
+            return true;
+        }
+        return false;
     }
 
 }
