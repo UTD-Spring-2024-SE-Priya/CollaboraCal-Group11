@@ -80,14 +80,14 @@ namespace CollaboraCal.Testing
             {
                 NewCalendarData data;
 
-                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
+                Assert.IsNull(Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
 
                 Application.Accounts.CreateUser("mc1174471@gmail.com", "Bob", "Hello444", "Hello444");
 
-                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("", "This calendar holds birthdays.")));
-                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "")));
-                Assert.AreEqual(false, Application.CalendarManager.CreateCalendar("", data = new("Birthdays", "This calendar holds birthdays")));
-                Assert.AreEqual(true, Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
+                Assert.IsNull(Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("", "This calendar holds birthdays.")));
+                Assert.IsNull(Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "")));
+                Assert.IsNull(Application.CalendarManager.CreateCalendar("", data = new("Birthdays", "This calendar holds birthdays")));
+                Assert.IsNotNull(Application.CalendarManager.CreateCalendar("mc1174471@gmail.com", data = new("Birthdays", "This calendar holds birthdays")));
 
                 Application.Database.RemoveUserByEmail("mc1174471@gmail.com");
 

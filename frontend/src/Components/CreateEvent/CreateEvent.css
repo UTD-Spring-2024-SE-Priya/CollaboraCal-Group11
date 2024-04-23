@@ -58,6 +58,20 @@
     flex: 1;
 }
 
+.input-date {
+    height: 40px;
+    background: #eaeaea;
+    border-radius: 6px;
+    padding-left: 10px;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 18px;
+    flex: 1;
+    display: flex;
+    width: 390px;
+}
+
 .date-info {
     color: #797979;
     font-size: 20px; /* Adjusted font size */

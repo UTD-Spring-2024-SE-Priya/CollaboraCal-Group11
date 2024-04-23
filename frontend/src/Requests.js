@@ -88,8 +88,8 @@ export function postRequest(endpoint, headers, body={})
         url,
         {
             method : "POST",
-            body : JSON.stringify(body),
-            headers : headers
+            headers : headers,
+            body : JSON.stringify(body)
         }
     )
 }

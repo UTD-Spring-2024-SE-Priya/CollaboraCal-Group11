@@ -37,6 +37,7 @@ const LoginSignUp = () => {
         else {
             // ERROR CODE
             req.deleteAuthenticationCookie()
+            setError("Incorrect username or password")
         }
     }
 

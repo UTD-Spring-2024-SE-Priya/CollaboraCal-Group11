@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using CollaboraCal.JsonRequests;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using SQLitePCL;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Identity;
 
 namespace CollaboraCal
 {
@@ -36,7 +38,7 @@ namespace CollaboraCal
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors(options =>
-                options.AddPolicy(name: "AllowReactLocalServer", policy => 
+                options.AddPolicy(name: "AllowReactLocalServer", policy =>
                 {
                     policy
                         .AllowAnyHeader()
@@ -74,9 +76,12 @@ namespace CollaboraCal
             // Calendar
             app.MapPost("/newcalendar", CreateCalendar).WithName("New Calendar").WithOpenApi();
             app.MapPost("/newevent", CreateEvent).WithName("Create Event").WithOpenApi();
+            app.MapPost("/deleteevent", DeleteEvent).WithName("Delete Event").WithOpenApi();
+            app.MapPost("/deletecalendar", DeleteCalendar).WithName("Delete Calendar").WithOpenApi();
 
             app.MapGet("/getallcalendar", GetAllCalendars).WithName("Get All Calendars From User").WithOpenApi();
-            app.MapGet("/getevents", GetEventsDuringTimeFrame).WithName("Get All Events In Calendar Within Timeframe").WithOpenApi();
+            app.MapPost("/getevents", GetEventsDuringTimeFrame).WithName("Get All Events In Calendar Within Timeframe").WithOpenApi();
+            // Should this be a POST request?? NO! Is it the only way to make the JSON Body arguments work with this little time??
 
             app.Run();
         }
@@ -90,7 +95,7 @@ namespace CollaboraCal
             [FromHeader(Name = "Email")] string? email,
             [FromHeader(Name = "Password")] string? password)
         {
-            if (email == null || password == null) 
+            if (email == null || password == null)
                 return TypedResults.BadRequest("Missing 'Email' and/or 'Password' headers");
             var result = Sessions.Login(email, password);
             if (result == null) return TypedResults.Unauthorized();
@@ -102,11 +107,11 @@ namespace CollaboraCal
             [FromHeader(Name = "Authentication")] string? authentication
         )
         {
-            if (email == null || authentication == null) 
+            if (email == null || authentication == null)
                 return TypedResults.BadRequest("Missing 'Email' and/or 'Password' headers");
             if (!Sessions.ValidateAuthentication(email, authentication))
                 return TypedResults.Unauthorized();
-            
+
             _ = Sessions.Logout(email);
             return TypedResults.Ok();
         }
@@ -114,7 +119,7 @@ namespace CollaboraCal
         private static IResult CreateUser(
             [FromHeader(Name = "Email")] string? email,
             [FromHeader(Name = "Password")] string? password,
-//            [FromHeader(Name = "ConfirmPassword")] string? confpassword,
+            //            [FromHeader(Name = "ConfirmPassword")] string? confpassword,
             [FromBody] string? name
         )
         {
@@ -170,11 +175,51 @@ namespace CollaboraCal
             var data = JsonConvert.DeserializeObject<NewCalendarData>(jsonBody);
             if (data == null) return TypedResults.BadRequest("Malformed body");
 
-            bool success = CalendarManager.CreateCalendar(email, data);
-            if (success)
-                return TypedResults.Ok("Calendar Created");
+            Calendar? calendar = CalendarManager.CreateCalendar(email, data);
+            if (calendar != null)
+            {
+                var clr = new CalendarListResponse(calendar.ID, calendar.Name, calendar.Description);
+                string asJson = JsonConvert.SerializeObject(clr);
+                return TypedResults.Ok(asJson);
+            }
             else
                 return TypedResults.Forbid();
+        }
+
+        private static IResult DeleteCalendar(
+            [FromHeader(Name = "Email")] string? email,
+            [FromHeader(Name = "Authentication")] string? authentication,
+            [FromBody] int? cID
+        )
+        {
+            if (email == null || authentication == null)
+                return TypedResults.BadRequest("Missing user or authentication");
+
+            if (!Sessions.ValidateAuthentication(email, authentication))
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            User? user = Database.GetHeavyUserFromEmail(email);
+            if (user == null) return TypedResults.NoContent();
+
+            if (cID == null) return TypedResults.BadRequest();
+            int calendarID = cID.Value;
+
+            Calendar? cal = Database.GetHeavyCalendar(calendarID);
+            if (cal == null) return TypedResults.BadRequest();
+
+            if (cal.Users?.First().ID == user.ID)
+            {
+                CalendarManager.DeleteCalendar(calendarID);
+            }
+            else
+            {
+                user.Calendars?.RemoveAll(a => a.ID == calendarID);
+                Database.Context.SaveChanges();
+            }
+
+            return TypedResults.Ok();
         }
 
         private static IResult CreateEvent(
@@ -199,6 +244,28 @@ namespace CollaboraCal
                 return TypedResults.Ok();
             else
                 return TypedResults.Forbid();
+        }
+
+        private static IResult DeleteEvent(
+            [FromHeader(Name = "Email")] string? email,
+            [FromHeader(Name = "Authentication")] string? authentication,
+            [FromBody] int? eventID
+        )
+        {
+            if (email == null || authentication == null) return TypedResults.BadRequest();
+            if (eventID == null) return TypedResults.BadRequest();
+
+            if (!Sessions.ValidateAuthentication(email, authentication))
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            bool success = CalendarManager.DeleteEvent(email, eventID.Value);
+
+            if (success)
+                return TypedResults.Ok();
+            else
+                return TypedResults.Unauthorized();
         }
 
         private static IResult GetAllCalendars(
@@ -237,7 +304,7 @@ namespace CollaboraCal
             List<Event>? events = Database.GetEventsFromCalendarWithinTimeframe(request);
             if (events == null) return TypedResults.BadRequest("Malformed request");
 
-            var organized = events.Select(a => new EventListResponse(a.Name, a.Description, a.Location, a.Start, a.End)).ToList();
+            var organized = events.Select(a => new EventListResponse(a.ID, a.Name, a.Description, a.Location, a.Start, a.End)).ToList();
             string asJson = JsonConvert.SerializeObject(organized);
 
             return TypedResults.Ok(asJson);
@@ -261,7 +328,7 @@ namespace CollaboraCal
 
         private record LoginResponse(string authentication, string email);
         private record CalendarListResponse(int id, string? name, string? description);
-        private record EventListResponse(string? name, string? description, string? location, DateTime start, DateTime end);
+        private record EventListResponse(int id, string? name, string? description, string? location, DateTime start, DateTime end);
 
     }
 
