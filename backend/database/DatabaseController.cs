@@ -99,6 +99,14 @@ namespace CollaboraCal
                 .SingleOrDefault();
         }
 
+        public Calendar? GetUserHeavyCalendar(int calendarID)
+        {
+            return dbContext.Calendars
+                .Where(a => a.ID == calendarID)
+                .Include(a => a.Users)
+                .SingleOrDefault();
+        }
+
         //      EVENTS
 
         public void AddEvent(Event ev)

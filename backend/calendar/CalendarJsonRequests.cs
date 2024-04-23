@@ -23,3 +23,8 @@ public record CalendarEventRequest(
     [JsonProperty("end")] DateTime EndTime,
     [JsonProperty("calendarID")] int CalendarID
 );
+
+public record CalendarShareRequest(
+    [JsonProperty("calendarID")] int CalendarID,
+    [JsonProperty("to")] string? ShareEmail
+);
