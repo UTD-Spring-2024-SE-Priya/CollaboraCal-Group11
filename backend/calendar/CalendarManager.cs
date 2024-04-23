@@ -74,6 +74,29 @@ public class CalendarManager
         return true;
     }
 
+    public bool ShareCalendar(string fromEmail, CalendarShareRequest request)
+    {
+        if (request.ShareEmail == null) return false;
+        Calendar? calendar = Application.Database.GetUserHeavyCalendar(request.CalendarID);
+        if (calendar == null) return false;
+        if (calendar.Users == null) return false;
+
+        if (!DoesCalendarBelongToUser(fromEmail, calendar))
+        {
+            return false;
+        }
+
+        User? toUser = Application.Database.GetHeavyUserFromEmail(request.ShareEmail);
+        if (toUser == null) return false;
+        if (toUser.Calendars == null) return false;
+
+        toUser.Calendars.Add(calendar);
+        calendar.Users.Add(toUser);
+        Application.Database.Context.SaveChanges();
+
+        return true;
+    }
+
     public bool CreateEvent(string email, NewEventData data)
     {
         Calendar? heavyCalendar = Application.Database.GetHeavyCalendar(data.CalendarID);

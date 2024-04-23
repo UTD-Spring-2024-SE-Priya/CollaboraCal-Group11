@@ -326,6 +326,24 @@ namespace CollaboraCal
             else return TypedResults.BadRequest();
         }
 
+        private static IResult ShareCalendar(
+            [FromHeader(Name = "Email")] string? email,
+            [FromHeader(Name = "Authentication")] string? authentication,
+            [FromBody] string? jsonBody
+        )
+        {
+            if (email == null || authentication == null) return TypedResults.BadRequest();
+            if (!Sessions.ValidateAuthentication(email, authentication)) return TypedResults.Unauthorized();
+            if (jsonBody == null) return TypedResults.BadRequest("Missing body");
+
+            var request = JsonConvert.DeserializeObject<CalendarShareRequest>(jsonBody);
+            if (request == null) return TypedResults.BadRequest("Malformed body");
+
+            bool success = CalendarManager.ShareCalendar(email, request);
+            if (success) return TypedResults.Ok();
+            else return TypedResults.Unauthorized();
+        }
+
         private record LoginResponse(string authentication, string email);
         private record CalendarListResponse(int id, string? name, string? description);
         private record EventListResponse(int id, string? name, string? description, string? location, DateTime start, DateTime end);
