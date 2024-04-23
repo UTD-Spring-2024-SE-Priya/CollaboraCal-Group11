@@ -89,6 +89,10 @@ const CalendarView = ({ route }) => {
         navigate("/create-event", { state: { id: location.state.id } });
     };
 
+    const handleShareButtonClick = () => {
+        navigate("/share", { state: { id: location.state.id } })
+    }
+
     const handleCalendarButtonClick = () => {
         navigate("/create-calendar");
     };
@@ -268,10 +272,11 @@ const CalendarView = ({ route }) => {
             <div className="containerBody">
                 <div className="bodyColumnLeftC">
                     {/* You can add any content you want for the left column */}
-                    <div className="textbody">Create</div>
+                    <div className="textbody">Actions</div>
                     <div className="underline"></div>
                     <div className='create-container'>
                         <button className="eventButton" onClick={handleEventButtonClick}>Event</button>
+                        <button className="eventButton" onClick={handleShareButtonClick}>Share</button>
                         {/* <button className="calendarButton" onClick={addCalendar}>Calendar</button> */}
                     </div>
 

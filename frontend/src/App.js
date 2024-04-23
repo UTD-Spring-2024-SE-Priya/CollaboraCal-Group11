@@ -6,6 +6,7 @@ import ForgotPassword from './Components/ForgotPassword/ForgotPassword';
 import CreateEvent from './Components/CreateEvent/CreateEvent';
 import CreateCalendar from './Components/CreateCalendar/CreateCalendar';
 import CalendarView from './Components/CalendarView/CalendarView';
+import SharePage from './Components/SharePage/SharePage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/reset-password" element={<ForgotPassword />} />
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/create-calendar" element={<CreateCalendar />} />
+          <Route path="/share" element={<SharePage />} />
         </Routes>
       </div>
     </Router>

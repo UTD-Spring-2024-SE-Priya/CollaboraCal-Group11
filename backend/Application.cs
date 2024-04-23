@@ -81,6 +81,7 @@ namespace CollaboraCal
 
             app.MapGet("/getallcalendar", GetAllCalendars).WithName("Get All Calendars From User").WithOpenApi();
             app.MapPost("/getevents", GetEventsDuringTimeFrame).WithName("Get All Events In Calendar Within Timeframe").WithOpenApi();
+            app.MapPost("/share", ShareCalendar).WithName("Share").WithOpenApi();
             // Should this be a POST request?? NO! Is it the only way to make the JSON Body arguments work with this little time??
 
             app.Run();
